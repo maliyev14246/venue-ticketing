@@ -16,6 +16,20 @@
     <main class="layout">
       <section id="venue-map" class="panel map-panel" aria-labelledby="map-title">
         <h2 id="map-title">Choose your seat</h2>
+        <!-- Map navigation: zoom, move in four directions, reset -->
+        <div class="map-controls" role="toolbar" aria-label="Map controls">
+          <div class="control-group">
+            <button type="button" data-action="zoom-out" aria-label="Zoom out" title="Zoom out">−</button>
+            <button type="button" data-action="zoom-in" aria-label="Zoom in" title="Zoom in">+</button>
+          </div>
+          <div class="control-group">
+            <button type="button" data-action="left" aria-label="Move left" title="Move left">←</button>
+            <button type="button" data-action="up" aria-label="Move up" title="Move up">↑</button>
+            <button type="button" data-action="down" aria-label="Move down" title="Move down">↓</button>
+            <button type="button" data-action="right" aria-label="Move right" title="Move right">→</button>
+          </div>
+          <button type="button" data-action="reset" class="reset-button">Reset view</button>
+        </div>
         <!-- The viewport is the visible window; the canvas holds the hall and will be zoomed/moved later -->
         <div class="map-viewport">
           <div id="map-canvas" class="map-canvas"></div>

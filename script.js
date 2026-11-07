@@ -321,6 +321,88 @@ function handleMapClick(event) {
 
 document.querySelector("#map-canvas").addEventListener("click", handleMapClick);
 
+// ============================================================
+// Map navigation - zoom, move and reset.
+// The canvas (the whole hall) is moved and scaled inside the viewport
+// with a CSS transform, so the seats themselves never change.
+// ============================================================
+
+const mapViewport = document.querySelector(".map-viewport");
+const mapCanvas = document.querySelector("#map-canvas");
+
+const view = { scale: 1, x: 0, y: 0 };
+const ZOOM_STEP = 1.2;     // each zoom click is 20% bigger or smaller
+const MIN_SCALE = 0.4;
+const MAX_SCALE = 2.5;
+const MOVE_STEP = 80;      // pixels per move click
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
+}
+
+// Applies the current view to the canvas, with limits so the hall never disappears
+function applyView() {
+  const maxX = (mapCanvas.offsetWidth * view.scale) / 2;
+  const maxY = (mapCanvas.offsetHeight * view.scale) / 2;
+  view.x = clamp(view.x, -maxX, maxX);
+  view.y = clamp(view.y, -maxY, maxY);
+
+  // translate(-50%, -50%) keeps the hall centred; then our move and zoom are added
+  mapCanvas.style.transform = `translate(-50%, -50%) translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+
+  // Grey out zoom buttons at the limits
+  document.querySelector('[data-action="zoom-in"]').disabled = view.scale >= MAX_SCALE;
+  document.querySelector('[data-action="zoom-out"]').disabled = view.scale <= MIN_SCALE;
+}
+
+function zoomBy(factor) {
+  view.scale = clamp(view.scale * factor, MIN_SCALE, MAX_SCALE);
+  applyView();
+}
+
+// "Move up" shows more of the top of the hall, so the hall itself slides down
+function moveBy(dx, dy) {
+  view.x += dx;
+  view.y += dy;
+  applyView();
+}
+
+// Centres the hall and zooms so the whole venue fits in the viewport
+function resetView() {
+  const fit = Math.min(
+    mapViewport.clientWidth / mapCanvas.offsetWidth,
+    mapViewport.clientHeight / mapCanvas.offsetHeight,
+    1
+  );
+  view.scale = clamp(fit, MIN_SCALE, MAX_SCALE);
+  view.x = 0;
+  view.y = 0;
+  applyView();
+}
+
+// One listener for all navigation buttons
+function handleControlClick(event) {
+  const button = event.target.closest("[data-action]");
+  if (!button) return;
+
+  switch (button.dataset.action) {
+    case "zoom-in": zoomBy(ZOOM_STEP); break;
+    case "zoom-out": zoomBy(1 / ZOOM_STEP); break;
+    case "up": moveBy(0, MOVE_STEP); break;
+    case "down": moveBy(0, -MOVE_STEP); break;
+    case "left": moveBy(MOVE_STEP, 0); break;
+    case "right": moveBy(-MOVE_STEP, 0); break;
+    case "reset": resetView(); break;
+  }
+}
+
+document.querySelector(".map-controls").addEventListener("click", handleControlClick);
+
 renderVenue();
 renderLegend();
+resetView();
+
+// Fit the hall again once fonts have loaded and when the window size changes
+window.addEventListener("load", resetView);
+window.addEventListener("resize", resetView);
 console.log(`${Object.keys(seatsById).length} seat buttons generated`);

@@ -124,7 +124,7 @@ body {
     align-items: start;
   }
 
-  #venue-map { grid-area: map; min-height: 36rem; }
+  #venue-map { grid-area: map; }
   #seat-details { grid-area: details; }
   #cart { grid-area: cart; }
 }
@@ -139,12 +139,13 @@ body {
    Venue map - stage, sections, rows and seats
    ============================================================ */
 
-/* Visible window of the map (zoom and move controls come later) */
+/* Visible window of the map: the hall is zoomed and moved inside it */
 .map-viewport {
-  overflow: auto;
+  position: relative;
+  height: 32rem;
+  overflow: hidden;
   border-radius: 0.5rem;
   background: var(--dusk);
-  padding: 1.5rem 1rem;
 }
 
 /* Everything inside the hall, centred so rows form a fan shape */
@@ -154,7 +155,57 @@ body {
   align-items: center;
   gap: 1.25rem;
   width: max-content;
-  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  /* placed at the centre of the viewport; JavaScript adds the zoom and move */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  transition: transform 0.2s ease;
+}
+
+/* Navigation buttons */
+.map-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0 0 0.75rem;
+}
+
+.control-group {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.map-controls button {
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--dusk);
+  color: var(--sand);
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.map-controls button:hover:not(:disabled) {
+  border-color: var(--zone-pit);
+}
+
+.map-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.map-controls .reset-button {
+  font-size: 0.95rem;
+}
+
+@media (max-width: 40rem) {
+  .map-viewport { height: 24rem; }
 }
 
 .stage {
