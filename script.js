@@ -1,13 +1,13 @@
 // ============================================================
-// Sunset Game Fest - venue data model
+// Solstice Game Showcase - venue data model
 // Live showcase auditorium setup.
 // Seats generated from JS object (not hardcoded in HTML).
 // ============================================================
 
 const showcase = {
-  name: "Sunset Game Fest",
-  event: "Live Showcase",
-  date: "June 12 · 2:00 PM PT",
+  name: "Solstice Game Showcase",
+  event: "Live from Los Angeles",
+  date: "June 12, 2:00 PM PT",
   venueType: "auditorium",
   currency: "USD",
   maxTicketsPerOrder: 6,
@@ -17,7 +17,7 @@ const showcase = {
   sections: [
     {
       id: "pit",
-      name: "Creator & Press Pit",
+      name: "Premiere Pit",
       price: 180,
       rows: [
         { label: "A", seats: 10, aisleAfter: [] },
@@ -26,7 +26,7 @@ const showcase = {
     },
     {
       id: "floor",
-      name: "Floor",
+      name: "Main Floor",
       price: 120,
       rows: [
         { label: "C", seats: 16, aisleAfter: [4, 12] },
@@ -39,7 +39,7 @@ const showcase = {
     },
     {
       id: "lower",
-      name: "Lower Bowl",
+      name: "Sunset Terrace",
       price: 85,
       rows: [
         { label: "J", seats: 22, aisleAfter: [6, 16] },
@@ -50,7 +50,7 @@ const showcase = {
     },
     {
       id: "balcony",
-      name: "Balcony",
+      name: "Skyline Balcony",
       price: 45,
       rows: [
         { label: "N", seats: 24, aisleAfter: [6, 18] },
@@ -79,4 +79,3 @@ const totalSeats = showcase.sections.reduce(
   0
 );
 console.log(`${showcase.name}: ${totalSeats} seats in ${showcase.sections.length} zones`);
-
