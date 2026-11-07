@@ -16,6 +16,10 @@
     <main class="layout">
       <section id="venue-map" class="panel map-panel" aria-labelledby="map-title">
         <h2 id="map-title">Choose your seat</h2>
+        <!-- The viewport is the visible window; the canvas holds the hall and will be zoomed/moved later -->
+        <div class="map-viewport">
+          <div id="map-canvas" class="map-canvas"></div>
+        </div>
       </section>
 
       <aside id="seat-details" class="panel" aria-labelledby="details-title">

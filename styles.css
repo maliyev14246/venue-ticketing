@@ -134,4 +134,86 @@ body {
   outline: 3px solid var(--zone-pit);
   outline-offset: 2px;
 }
-/* Venue styles */
+
+/* ============================================================
+   Venue map - stage, sections, rows and seats
+   ============================================================ */
+
+/* Visible window of the map (zoom and move controls come later) */
+.map-viewport {
+  overflow: auto;
+  border-radius: 0.5rem;
+  background: var(--dusk);
+  padding: 1.5rem 1rem;
+}
+
+/* Everything inside the hall, centred so rows form a fan shape */
+.map-canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: max-content;
+  margin: 0 auto;
+}
+
+.stage {
+  width: 22rem;
+  padding: 0.75rem;
+  border-radius: 0 0 50% 50% / 0 0 1.5rem 1.5rem;
+  background: linear-gradient(180deg, #fff1b8, var(--zone-pit));
+  color: var(--dusk);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.section-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.section-label {
+  margin: 0 0 0.25rem;
+  color: var(--haze);
+  font-size: 0.875rem;
+}
+
+.seat-row {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.row-label {
+  width: 1.25rem;
+  color: var(--haze);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.aisle {
+  width: 1rem;
+}
+
+/* Seat shape: a small chair with a rounded back */
+.seat {
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.6rem 0.6rem 0.25rem 0.25rem;
+  color: var(--dusk);
+  font-family: var(--font-body);
+  font-size: 0.6rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Each zone has its own colour */
+.zone-pit { background: var(--zone-pit); }
+.zone-floor { background: var(--zone-floor); }
+.zone-lower { background: var(--zone-lower); }
+.zone-balcony { background: var(--zone-balcony); }

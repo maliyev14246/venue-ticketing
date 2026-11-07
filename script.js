@@ -79,3 +79,109 @@ const totalSeats = showcase.sections.reduce(
   0
 );
 console.log(`${showcase.name}: ${totalSeats} seats in ${showcase.sections.length} zones`);
+
+// ============================================================
+// Seat generation - builds every seat button from the data above
+// ============================================================
+
+// All generated seats, stored by ID (e.g. "G-9") so we can look them up later
+const seatsById = {};
+
+// True if a seat falls inside a range like the camera platform
+function isInRange(rowLabel, seatNumber, range) {
+  return range.rows.includes(rowLabel) &&
+    seatNumber >= range.fromSeat &&
+    seatNumber <= range.toSeat;
+}
+
+// Builds one seat object: its ID, zone, price and starting status
+function createSeat(section, row, number) {
+  const id = `${row.label}-${number}`;
+  const restricted = isInRange(row.label, number, showcase.restrictedView);
+
+  let status = "available";
+  if (isInRange(row.label, number, showcase.cameraPlatform)) {
+    status = "blocked";
+  } else if (showcase.soldSeats.includes(id)) {
+    status = "sold";
+  }
+
+  return {
+    id,
+    sectionId: section.id,
+    sectionName: section.name,
+    row: row.label,
+    number,
+    price: restricted ? showcase.restrictedView.price : section.price,
+    restricted,
+    accessible: showcase.accessibleSeats.includes(id),
+    status
+  };
+}
+
+// Turns a seat object into a <button> on the map
+function createSeatButton(seat) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `seat zone-${seat.sectionId}`;
+  button.textContent = seat.number;
+  button.dataset.seatId = seat.id;
+  button.setAttribute("aria-label", `${seat.sectionName}, row ${seat.row}, seat ${seat.number}`);
+
+  if (seat.status !== "available") button.classList.add(`is-${seat.status}`);
+  if (seat.restricted) button.classList.add("is-restricted");
+  if (seat.accessible) button.classList.add("is-accessible");
+
+  return button;
+}
+
+// Draws the stage, then every section, row and seat (with aisle gaps)
+function renderVenue() {
+  const canvas = document.querySelector("#map-canvas");
+  canvas.replaceChildren();
+
+  const stage = document.createElement("div");
+  stage.className = "stage";
+  stage.textContent = "Main stage";
+  canvas.append(stage);
+
+  showcase.sections.forEach(section => {
+    const block = document.createElement("div");
+    block.className = "section-block";
+
+    const label = document.createElement("p");
+    label.className = "section-label";
+    label.textContent = `${section.name} – $${section.price}`;
+    block.append(label);
+
+    section.rows.forEach(row => {
+      const rowElement = document.createElement("div");
+      rowElement.className = "seat-row";
+
+      const rowLabel = document.createElement("span");
+      rowLabel.className = "row-label";
+      rowLabel.textContent = row.label;
+      rowElement.append(rowLabel);
+
+      for (let number = 1; number <= row.seats; number++) {
+        const seat = createSeat(section, row, number);
+        seatsById[seat.id] = seat;
+        rowElement.append(createSeatButton(seat));
+
+        // Leave a walkway gap after the seat numbers listed in aisleAfter
+        if (row.aisleAfter.includes(number)) {
+          const aisle = document.createElement("span");
+          aisle.className = "aisle";
+          rowElement.append(aisle);
+        }
+      }
+
+      block.append(rowElement);
+    });
+
+    canvas.append(block);
+  });
+}
+
+renderVenue();
+console.log(`${Object.keys(seatsById).length} seat buttons generated`);
