@@ -224,6 +224,103 @@ function renderLegend() {
   });
 }
 
+// ============================================================
+// Seat inspection - clicking a seat only SHOWS its details.
+// (Adding to the cart is a separate button, added next.)
+// ============================================================
+
+let inspectedSeatId = null;
+
+// Shows prices as US dollars, e.g. 120 -> "$120.00"
+const priceFormat = new Intl.NumberFormat("en-US", { style: "currency", currency: showcase.currency });
+
+function formatPrice(amount) {
+  return priceFormat.format(amount);
+}
+
+// Finds the button for a seat ID, e.g. "G-9"
+function getSeatButton(seatId) {
+  return document.querySelector(`[data-seat-id="${seatId}"]`);
+}
+
+// Moves the "selected" highlight to a new seat (or removes it with null)
+function setInspectedSeat(seatId) {
+  if (inspectedSeatId) {
+    getSeatButton(inspectedSeatId).classList.remove("is-inspected");
+  }
+  inspectedSeatId = seatId;
+  if (seatId) {
+    getSeatButton(seatId).classList.add("is-inspected");
+  }
+}
+
+// Small helper: one "label: value" pair for the pass
+function addDetail(list, label, value) {
+  const term = document.createElement("dt");
+  term.textContent = label;
+  const detail = document.createElement("dd");
+  detail.textContent = value;
+  list.append(term, detail);
+}
+
+// Shows a seat's details in the "Selected seat" panel, styled like a festival pass
+function showSeatDetails(seat) {
+  const body = document.querySelector("#details-body");
+  body.replaceChildren();
+
+  // Unavailable seats: explain why instead of showing a pass
+  if (seat.status !== "available") {
+    setInspectedSeat(null);
+    const message = document.createElement("p");
+    message.className = "notice";
+    message.textContent = seat.status === "blocked"
+      ? `Seat ${seat.id} is unavailable: the camera platform covers it. Choose another seat.`
+      : `Seat ${seat.id} is already sold. Choose another seat.`;
+    body.append(message);
+    return;
+  }
+
+  setInspectedSeat(seat.id);
+
+  const pass = document.createElement("article");
+  pass.className = "pass";
+  pass.style.setProperty("--zone-colour", `var(--zone-${seat.sectionId})`);
+
+  const zone = document.createElement("h3");
+  zone.textContent = seat.sectionName;
+
+  const details = document.createElement("dl");
+  addDetail(details, "Row", seat.row);
+  addDetail(details, "Seat", seat.number);
+  addDetail(details, "Price", formatPrice(seat.price));
+
+  pass.append(zone, details);
+
+  if (seat.restricted) {
+    const note = document.createElement("p");
+    note.className = "pass-note";
+    note.textContent = "Restricted view: the camera platform is in front of this seat.";
+    pass.append(note);
+  }
+  if (seat.accessible) {
+    const note = document.createElement("p");
+    note.className = "pass-note";
+    note.textContent = "Wheelchair space with easy access from the entrance.";
+    pass.append(note);
+  }
+
+  body.append(pass);
+}
+
+// One click listener on the whole map handles every seat (event delegation)
+function handleMapClick(event) {
+  const button = event.target.closest(".seat");
+  if (!button) return;   // clicked an empty spot, not a seat
+  showSeatDetails(seatsById[button.dataset.seatId]);
+}
+
+document.querySelector("#map-canvas").addEventListener("click", handleMapClick);
+
 renderVenue();
 renderLegend();
 console.log(`${Object.keys(seatsById).length} seat buttons generated`);

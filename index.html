@@ -26,7 +26,10 @@
 
       <aside id="seat-details" class="panel" aria-labelledby="details-title">
         <h2 id="details-title">Selected seat</h2>
-        <p class="hint">Click a seat on the map to see its zone and price.</p>
+        <!-- Filled in by script.js when a seat is clicked -->
+        <div id="details-body" aria-live="polite">
+          <p class="hint">Click a seat on the map to see its zone and price.</p>
+        </div>
       </aside>
 
       <section id="cart" class="panel" aria-labelledby="cart-title">
