@@ -1,1 +1,137 @@
+/* ============================================================
+   Solstice Game Showcase - theme and page layout
+   A summer showcase in LA: dusk sky, a big setting sun on the horizon.
+   ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Outfit:wght@400;600&display=swap");
+
+/* Colour and type tokens (reused everywhere) */
+:root {
+  --dusk: #241640;        /* page background: evening sky */
+  --twilight: #33215a;    /* panels */
+  --line: #4d3880;        /* borders */
+  --sand: #fff3e3;        /* main text */
+  --haze: #cdbfe6;        /* secondary text */
+
+  /* zone colours (used for seats later) */
+  --zone-pit: #ffc857;      /* gold */
+  --zone-floor: #ff7a59;    /* coral */
+  --zone-lower: #f25f9c;    /* pink */
+  --zone-balcony: #a98bff;  /* lavender */
+
+  --font-display: "Anton", "Impact", "Arial Narrow", sans-serif;
+  --font-body: "Outfit", "Segoe UI", Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--dusk);
+  color: var(--sand);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Header: the sunset horizon is the one bold element of the page */
+.site-header {
+  position: relative;
+  overflow: hidden;
+  padding: 2rem 1.5rem 2.5rem;
+  background: linear-gradient(180deg, var(--dusk) 0%, #6b2f7a 55%, #e8566b 85%, var(--zone-pit) 100%);
+}
+
+.site-header h1 {
+  position: relative;   /* stays above the sun */
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+}
+
+/* The setting sun: half a disc sinking into the horizon line */
+.site-header::after {
+  content: "";
+  position: absolute;
+  right: 8%;
+  bottom: -5rem;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, #fff1b8 0%, var(--zone-pit) 45%, #ff8a3d 100%);
+  box-shadow: 0 0 4rem 1rem rgba(255, 168, 77, 0.45);
+}
+
+.event-info {
+  position: relative;
+  margin: 0.75rem 0 0;
+  font-size: 1.125rem;
+}
+
+/* Phones: a smaller sun that sits below the event text */
+@media (max-width: 40rem) {
+  .site-header { padding-bottom: 4rem; }
+  .site-header::after { width: 6.5rem; height: 6.5rem; bottom: -3.25rem; right: 6%; }
+}
+
+/* Page layout: stacked on phones */
+.layout {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 80rem;
+  margin: 0 auto;
+}
+
+.panel {
+  background: var(--twilight);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.panel h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.hint {
+  margin: 0;
+  color: var(--haze);
+}
+
+/* The map gets the most room */
+.map-panel {
+  min-height: 24rem;
+}
+
+/* Wider screens: map on the left, details + cart on the right */
+@media (min-width: 60rem) {
+  .layout {
+    grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+    grid-template-rows: auto 1fr;   /* details stays compact, cart sits right under it */
+    grid-template-areas:
+      "map details"
+      "map cart";
+    align-items: start;
+  }
+
+  #venue-map { grid-area: map; min-height: 36rem; }
+  #seat-details { grid-area: details; }
+  #cart { grid-area: cart; }
+}
+
+/* Visible keyboard focus for every button and link */
+:focus-visible {
+  outline: 3px solid var(--zone-pit);
+  outline-offset: 2px;
+}
 /* Venue styles */

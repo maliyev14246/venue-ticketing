@@ -3,18 +3,30 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Venue Ticketing</title>
+    <title>Solstice Game Showcase – Tickets</title>
     <link rel="stylesheet" href="styles.css">
     <script defer src="script.js"></script>
   </head>
   <body>
-    <header>
-      <h1>Venue Ticketing</h1>
+    <header class="site-header">
+      <h1>Solstice<br>Game Showcase</h1>
+      <p class="event-info">Live from Los Angeles, June 12, 2:00 PM PT</p>
     </header>
-    <main>
-      <section id="venue-map"></section>
-      <aside id="seat-details"></aside>
-      <section id="cart"></section>
+
+    <main class="layout">
+      <section id="venue-map" class="panel map-panel" aria-labelledby="map-title">
+        <h2 id="map-title">Choose your seat</h2>
+      </section>
+
+      <aside id="seat-details" class="panel" aria-labelledby="details-title">
+        <h2 id="details-title">Selected seat</h2>
+        <p class="hint">Click a seat on the map to see its zone and price.</p>
+      </aside>
+
+      <section id="cart" class="panel" aria-labelledby="cart-title">
+        <h2 id="cart-title">My passes</h2>
+        <p class="hint">No passes yet. Add a seat to start your order.</p>
+      </section>
     </main>
   </body>
 </html>
