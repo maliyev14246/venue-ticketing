@@ -128,7 +128,12 @@ function createSeatButton(seat) {
   button.dataset.seatId = seat.id;
   button.setAttribute("aria-label", `${seat.sectionName}, row ${seat.row}, seat ${seat.number}`);
 
-  if (seat.status !== "available") button.classList.add(`is-${seat.status}`);
+  // Sold and blocked seats stay clickable (so we can explain why later),
+  // but screen readers are told they are unavailable
+  if (seat.status !== "available") {
+    button.classList.add(`is-${seat.status}`);
+    button.setAttribute("aria-disabled", "true");
+  }
   if (seat.restricted) button.classList.add("is-restricted");
   if (seat.accessible) button.classList.add("is-accessible");
 
@@ -183,5 +188,42 @@ function renderVenue() {
   });
 }
 
+// ============================================================
+// Legend - zone colours come from the data, states are fixed
+// ============================================================
+
+// Seat states shown in the legend, using the same CSS classes as real seats
+const seatStates = [
+  { label: "Available", className: "zone-floor" },
+  { label: "Selected", className: "zone-floor is-inspected" },
+  { label: "In your passes", className: "zone-floor is-in-cart" },
+  { label: "Restricted view ($55)", className: "zone-lower is-restricted" },
+  { label: "Wheelchair space", className: "zone-floor is-accessible" },
+  { label: "Unavailable", className: "is-sold" }
+];
+
+// Adds one legend line: a small seat-shaped swatch plus its text
+function addLegendItem(list, className, text) {
+  const item = document.createElement("li");
+  const swatch = document.createElement("span");
+  swatch.className = `seat swatch ${className}`;
+  swatch.setAttribute("aria-hidden", "true");
+  item.append(swatch, text);
+  list.append(item);
+}
+
+function renderLegend() {
+  const legend = document.querySelector("#legend");
+  legend.replaceChildren();
+
+  showcase.sections.forEach(section => {
+    addLegendItem(legend, `zone-${section.id}`, `${section.name} – $${section.price}`);
+  });
+  seatStates.forEach(state => {
+    addLegendItem(legend, state.className, state.label);
+  });
+}
+
 renderVenue();
+renderLegend();
 console.log(`${Object.keys(seatsById).length} seat buttons generated`);
