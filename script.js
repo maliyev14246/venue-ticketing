@@ -231,6 +231,10 @@ function renderLegend() {
 
 let inspectedSeatId = null;
 
+// The cart only stores seat IDs, e.g. ["C-5", "J-11"].
+// Everything else (zone, price...) is looked up in seatsById.
+let cart = [];
+
 // Shows prices as US dollars, e.g. 120 -> "$120.00"
 const priceFormat = new Intl.NumberFormat("en-US", { style: "currency", currency: showcase.currency });
 
@@ -309,7 +313,99 @@ function showSeatDetails(seat) {
     pass.append(note);
   }
 
+  // ADD TO CART is the only way a seat goes into the cart
+  const addButton = document.createElement("button");
+  addButton.type = "button";
+  addButton.className = "add-button";
+  if (cart.includes(seat.id)) {
+    addButton.textContent = "In your passes ✓";
+    addButton.disabled = true;
+  } else {
+    addButton.textContent = "ADD TO CART";
+    addButton.addEventListener("click", () => addToCart(seat.id));
+  }
+  pass.append(addButton);
+
   body.append(pass);
+
+  if (cart.includes(seat.id)) {
+    showMessage("This seat is already in your passes. Each seat can only be added once.");
+  }
+}
+
+// Shows a short message under the pass (e.g. "already added")
+function showMessage(text) {
+  const body = document.querySelector("#details-body");
+  let message = body.querySelector(".pass-message");
+  if (!message) {
+    message = document.createElement("p");
+    message.className = "pass-message";
+    body.append(message);
+  }
+  message.textContent = text;
+}
+
+// ============================================================
+// Cart
+// ============================================================
+
+// Adds a seat to the cart after checking it is allowed
+function addToCart(seatId) {
+  const seat = seatsById[seatId];
+
+  if (!seat || seat.status !== "available") {
+    showMessage("This seat is unavailable and cannot be added.");
+    return;
+  }
+  if (cart.includes(seatId)) {
+    showMessage("This seat is already in your passes. Each seat can only be added once.");
+    return;
+  }
+
+  cart.push(seatId);
+  getSeatButton(seatId).classList.add("is-in-cart");
+  cartChanged();
+  showSeatDetails(seat);   // redraw the pass so its button shows "In your passes"
+  showMessage("Added to your passes.");
+}
+
+// Called after every change to the cart
+function cartChanged() {
+  renderCart();
+}
+
+// Draws the list of passes and the total price
+function renderCart() {
+  const list = document.querySelector("#cart-list");
+  list.replaceChildren();
+
+  cart.forEach(seatId => {
+    const seat = seatsById[seatId];
+
+    const item = document.createElement("li");
+    item.className = "cart-item";
+    item.style.setProperty("--zone-colour", `var(--zone-${seat.sectionId})`);
+
+    const info = document.createElement("div");
+    const zone = document.createElement("strong");
+    zone.textContent = seat.sectionName;
+    const place = document.createElement("span");
+    place.textContent = `Row ${seat.row}, Seat ${seat.number}`;
+    info.append(zone, place);
+
+    const price = document.createElement("span");
+    price.className = "cart-price";
+    price.textContent = formatPrice(seat.price);
+
+    item.append(info, price);
+    list.append(item);
+  });
+
+  const total = cart.reduce((sum, seatId) => sum + seatsById[seatId].price, 0);
+  document.querySelector("#cart-total").textContent = formatPrice(total);
+  document.querySelector("#cart-count").textContent = cart.length ? `(${cart.length})` : "";
+  document.querySelector("#cart-empty").hidden = cart.length > 0;
+  document.querySelector("#cart-summary").hidden = cart.length === 0;
 }
 
 // One click listener on the whole map handles every seat (event delegation)

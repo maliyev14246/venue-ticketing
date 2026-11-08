@@ -423,3 +423,88 @@ body {
   background: rgba(242, 95, 156, 0.15);
   border: 1px solid var(--zone-lower);
 }
+
+/* ============================================================
+   ADD TO CART and the cart
+   ============================================================ */
+
+.add-button {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, var(--zone-pit), var(--zone-floor));
+  color: var(--dusk);
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.add-button:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.add-button:disabled {
+  background: var(--line);
+  color: var(--sand);
+  font-family: var(--font-body);
+  font-weight: 600;
+  cursor: default;
+}
+
+.pass-message {
+  margin: 0.75rem 0 0;
+  color: var(--zone-pit);
+  font-size: 0.9rem;
+}
+
+.cart-count {
+  color: var(--haze);
+  font-weight: 400;
+}
+
+.cart-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+/* Each pass in the cart: zone stripe, seat info, price */
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-left: 0.4rem solid var(--zone-colour);
+  border-radius: 0.4rem;
+  background: var(--dusk);
+}
+
+.cart-item div {
+  display: grid;
+  flex: 1;
+}
+
+.cart-item span {
+  color: var(--haze);
+  font-size: 0.875rem;
+}
+
+.cart-item .cart-price {
+  color: var(--sand);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--line);
+  font-size: 1.1rem;
+}

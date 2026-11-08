@@ -47,8 +47,12 @@
       </aside>
 
       <section id="cart" class="panel" aria-labelledby="cart-title">
-        <h2 id="cart-title">My passes</h2>
-        <p class="hint">No passes yet. Add a seat to start your order.</p>
+        <h2 id="cart-title">My passes <span id="cart-count" class="cart-count"></span></h2>
+        <p id="cart-empty" class="hint">No passes yet. Add a seat to start your order.</p>
+        <ul id="cart-list" class="cart-list"></ul>
+        <p id="cart-summary" class="cart-total" hidden>
+          Total <strong id="cart-total">$0.00</strong>
+        </p>
       </section>
     </main>
   </body>
