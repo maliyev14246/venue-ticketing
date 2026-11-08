@@ -576,6 +576,73 @@ function handleControlClick(event) {
 
 document.querySelector(".map-controls").addEventListener("click", handleControlClick);
 
+// ============================================================
+// Bonus: mouse-wheel zoom and click-and-drag panning.
+// These are extra ways to navigate; the buttons above still work.
+// ============================================================
+
+// Mouse wheel: scroll up to zoom in, down to zoom out
+mapViewport.addEventListener("wheel", event => {
+  event.preventDefault();   // stop the whole page from scrolling
+  zoomBy(event.deltaY < 0 ? ZOOM_STEP : 1 / ZOOM_STEP);
+}, { passive: false });
+
+// Drag to move. A small movement still counts as a normal click on a seat.
+let drag = null;
+let justDragged = false;
+
+mapViewport.addEventListener("pointerdown", event => {
+  if (event.button !== 0) return;   // left mouse button or touch only
+  drag = { startX: event.clientX, startY: event.clientY, viewX: view.x, viewY: view.y, moved: false };
+});
+
+window.addEventListener("pointermove", event => {
+  if (!drag) return;
+  const dx = event.clientX - drag.startX;
+  const dy = event.clientY - drag.startY;
+
+  if (!drag.moved && Math.hypot(dx, dy) < 5) return;   // not a drag yet
+  drag.moved = true;
+  mapViewport.classList.add("is-dragging");
+
+  view.x = drag.viewX + dx;
+  view.y = drag.viewY + dy;
+  applyView();
+});
+
+window.addEventListener("pointerup", () => {
+  if (drag && drag.moved) {
+    justDragged = true;
+    setTimeout(() => { justDragged = false; }, 0);
+  }
+  drag = null;
+  mapViewport.classList.remove("is-dragging");
+});
+
+// After a drag, ignore the click so the seat under the mouse is not selected
+mapViewport.addEventListener("click", event => {
+  if (justDragged) event.stopPropagation();
+}, true);
+
+// ============================================================
+// Keyboard shortcuts (game style): W A S D move, + and - zoom, 0 resets
+// ============================================================
+
+document.addEventListener("keydown", event => {
+  if (event.ctrlKey || event.metaKey || event.altKey) return;
+
+  switch (event.key.toLowerCase()) {
+    case "w": moveBy(0, MOVE_STEP); break;
+    case "s": moveBy(0, -MOVE_STEP); break;
+    case "a": moveBy(MOVE_STEP, 0); break;
+    case "d": moveBy(-MOVE_STEP, 0); break;
+    case "+":
+    case "=": zoomBy(ZOOM_STEP); break;
+    case "-": zoomBy(1 / ZOOM_STEP); break;
+    case "0": resetView(); break;
+  }
+});
+
 renderVenue();
 renderLegend();
 restoreCart();   // must run after renderVenue, because it needs the seat buttons
