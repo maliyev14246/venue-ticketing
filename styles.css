@@ -508,3 +508,35 @@ body {
   border-top: 1px solid var(--line);
   font-size: 1.1rem;
 }
+
+/* Remove one pass, or all passes */
+.remove-button {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--haze);
+  cursor: pointer;
+}
+
+.remove-button:hover {
+  border-color: var(--zone-lower);
+  color: var(--sand);
+}
+
+.clear-button {
+  margin-top: 0.75rem;
+  padding: 0.4rem 0;
+  border: none;
+  background: none;
+  color: var(--haze);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  color: var(--sand);
+}

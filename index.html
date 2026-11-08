@@ -50,9 +50,10 @@
         <h2 id="cart-title">My passes <span id="cart-count" class="cart-count"></span></h2>
         <p id="cart-empty" class="hint">No passes yet. Add a seat to start your order.</p>
         <ul id="cart-list" class="cart-list"></ul>
-        <p id="cart-summary" class="cart-total" hidden>
-          Total <strong id="cart-total">$0.00</strong>
-        </p>
+        <div id="cart-summary" hidden>
+          <p class="cart-total">Total <strong id="cart-total">$0.00</strong></p>
+          <button type="button" id="clear-cart" class="clear-button">Remove all passes</button>
+        </div>
       </section>
     </main>
   </body>

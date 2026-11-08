@@ -361,6 +361,10 @@ function addToCart(seatId) {
     showMessage("This seat is already in your passes. Each seat can only be added once.");
     return;
   }
+  if (cart.length >= showcase.maxTicketsPerOrder) {
+    showMessage(`You can add up to ${showcase.maxTicketsPerOrder} passes per order.`);
+    return;
+  }
 
   cart.push(seatId);
   getSeatButton(seatId).classList.add("is-in-cart");
@@ -373,6 +377,34 @@ function addToCart(seatId) {
 function cartChanged() {
   renderCart();
 }
+
+// Removes one seat from the cart and frees it on the map
+function removeFromCart(seatId) {
+  cart = cart.filter(id => id !== seatId);
+  getSeatButton(seatId).classList.remove("is-in-cart");
+  cartChanged();
+
+  // If that seat is open in the details panel, refresh it so ADD TO CART comes back
+  if (inspectedSeatId === seatId) {
+    showSeatDetails(seatsById[seatId]);
+  }
+}
+
+// Empties the whole cart (asks first, so it is not done by accident)
+function clearCart() {
+  if (!confirm("Remove all passes from your order?")) return;
+  [...cart].forEach(seatId => removeFromCart(seatId));
+}
+
+// One listener for every remove button in the cart (event delegation)
+function handleCartClick(event) {
+  const button = event.target.closest("[data-remove-id]");
+  if (!button) return;
+  removeFromCart(button.dataset.removeId);
+}
+
+document.querySelector("#cart-list").addEventListener("click", handleCartClick);
+document.querySelector("#clear-cart").addEventListener("click", clearCart);
 
 // Draws the list of passes and the total price
 function renderCart() {
@@ -397,7 +429,15 @@ function renderCart() {
     price.className = "cart-price";
     price.textContent = formatPrice(seat.price);
 
-    item.append(info, price);
+    // Remove button: data-remove-id tells the cart listener which seat to remove
+    const removeButton = document.createElement("button");
+    removeButton.type = "button";
+    removeButton.className = "remove-button";
+    removeButton.textContent = "✕";
+    removeButton.dataset.removeId = seat.id;
+    removeButton.setAttribute("aria-label", `Remove row ${seat.row}, seat ${seat.number}`);
+
+    item.append(info, price, removeButton);
     list.append(item);
   });
 
