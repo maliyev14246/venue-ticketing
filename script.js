@@ -373,8 +373,50 @@ function addToCart(seatId) {
   showMessage("Added to your passes.");
 }
 
-// Called after every change to the cart
+// Called after every change to the cart: save it, then redraw it
 function cartChanged() {
+  saveCart();
+  renderCart();
+}
+
+// ============================================================
+// Saving the cart in localStorage (it only stores text, so we use JSON)
+// ============================================================
+
+const STORAGE_KEY = "solsticeCart";
+
+function saveCart() {
+  const data = { seatIds: cart, updatedAt: new Date().toISOString() };
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (error) {
+    console.warn("Could not save the cart:", error);
+  }
+}
+
+// Reads the saved cart. Returns [] for a first visit or broken data,
+// and drops any seat that no longer exists or is no longer available.
+function loadCart() {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return [];
+
+    const data = JSON.parse(stored);
+    const seatIds = Array.isArray(data.seatIds) ? data.seatIds : [];
+
+    return seatIds
+      .filter(id => seatsById[id] && seatsById[id].status === "available")
+      .filter((id, index, list) => list.indexOf(id) === index)   // no duplicates
+      .slice(0, showcase.maxTicketsPerOrder);
+  } catch (error) {
+    return [];
+  }
+}
+
+// Restores the cart after a refresh: the list AND the matching seats on the map
+function restoreCart() {
+  cart = loadCart();
+  cart.forEach(seatId => getSeatButton(seatId).classList.add("is-in-cart"));
   renderCart();
 }
 
@@ -536,6 +578,7 @@ document.querySelector(".map-controls").addEventListener("click", handleControlC
 
 renderVenue();
 renderLegend();
+restoreCart();   // must run after renderVenue, because it needs the seat buttons
 resetView();
 
 // Fit the hall again once fonts have loaded and when the window size changes
